@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AniFrame Video Downloader</title>
+<link href="/static/style.css" rel="stylesheet" />
+</head>
+<body>
+<div class="app" id="app">
+  <nav class="nav">
+    <span class="nav-logo">AniFrame</span>
+    <div class="nav-links" id="navLinks">
+      <button class="nav-link active" data-page="home">🏠 <span data-i18n="nav_home">Ana Sayfa</span></button>
+      <button class="nav-link" data-page="series">📺 <span data-i18n="nav_series">Diziler</span></button>
+      <button class="nav-link" data-page="movies">🎬 <span data-i18n="nav_movies">Filmler</span></button>
+      <button class="nav-link" data-page="anime">🎌 <span data-i18n="nav_anime">Animeler</span></button>
+      <button class="nav-link" data-page="video">🎥 <span data-i18n="nav_video">Videolar</span></button>
+      <button class="nav-link" data-page="panel">⚡ <span data-i18n="nav_panel">Video Panel</span></button>
+      <button class="nav-link" data-page="settings">⚙️ <span data-i18n="nav_settings">Ayarlar</span></button>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <section class="page visible" id="page-home">
+      <h1 class="page-title" data-i18n="home_title">Ana Sayfa</h1>
+      <div class="stat-grid" id="statGrid">
+        <div class="glass-card stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label" data-i18n="stat_total">Toplam Video</div></div>
+        <div class="glass-card stat-card"><div class="stat-value" id="statSize">0 GB</div><div class="stat-label" data-i18n="stat_size">Toplam Boyut</div></div>
+        <div class="glass-card stat-card"><div class="stat-value" id="statRecent">0</div><div class="stat-label" data-i18n="stat_recent">Bu Hafta İndirilen</div></div>
+        <div class="glass-card stat-card"><div class="stat-value" id="statFolders">0</div><div class="stat-label" data-i18n="stat_folders">Harici Klasör</div></div>
+      </div>
+      <div class="section-header"><span class="section-title" data-i18n="recent_videos">Son Eklenenler</span></div>
+      <div class="video-grid" id="recentGrid"></div>
+    </section>
+
+    <section class="page" id="page-series">
+      <h1 class="page-title" data-i18n="page_series">Diziler</h1>
+      <div class="section-header" style="margin-bottom:16px">
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm source-tab active" data-source="all" data-category="dizi"><span data-i18n="tab_all">Tümü</span></button>
+          <button class="btn btn-secondary btn-sm source-tab" data-source="download" data-category="dizi"><span data-i18n="tab_downloaded">İndirilenler</span></button>
+          <button class="btn btn-secondary btn-sm source-tab" data-source="external" data-category="dizi"><span data-i18n="tab_external">Harici</span></button>
+        </div>
+      </div>
+      <div class="video-grid" id="seriesGrid"></div>
+      <div class="empty-state" id="seriesEmpty" style="display:none"><div class="icon">📺</div><div data-i18n="no_series">Henuz dizi yok</div></div>
+    </section>
+
+    <section class="page" id="page-movies">
+      <h1 class="page-title" data-i18n="page_movies">Filmler</h1>
+      <div class="section-header" style="margin-bottom:16px">
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm source-tab active" data-source="all" data-category="film"><span data-i18n="tab_all">Tumu</span></button>
+          <button class="btn btn-secondary btn-sm source-tab" data-source="download" data-category="film"><span data-i18n="tab_downloaded">Indirilenler</span></button>
+          <button class="btn btn-secondary btn-sm source-tab" data-source="external" data-category="film"><span data-i18n="tab_external">Harici</span></button>
+        </div>
+      </div>
+      <div class="video-grid" id="moviesGrid"></div>
+      <div class="empty-state" id="moviesEmpty" style="display:none"><div class="icon">🎬</div><div data-i18n="no_movies">Henuz film yok</div></div>
+    </section>
+
+    <section class="page" id="page-anime">
+      <h1 class="page-title" data-i18n="page_anime">Animeler</h1>
+      <div class="section-header" style="margin-bottom:16px">
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm source-tab active" data-source="all" data-category="anime"><span data-i18n="tab_all">Tumu</span></button>
+          <button class="btn btn-secondary btn-sm source-tab" data-source="download" data-category="anime"><span data-i18n="tab_downloaded">Indirilenler</span></button>
+          <button class="btn btn-secondary btn-sm source-tab" data-source="external" data-category="anime"><span data-i18n="tab_external">Harici</span></button>
+        </div>
+      </div>
+      <div class="video-grid" id="animeGrid"></div>
+      <div class="empty-state" id="animeEmpty" style="display:none"><div class="icon">🎌</div><div data-i18n="no_anime">Henuz anime yok</div></div>
+    </section>
+
+    <section class="page" id="page-video">
+      <h1 class="page-title" data-i18n="page_video">Videolar</h1>
+      <div class="section-header" style="margin-bottom:16px">
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-primary btn-sm source-tab active" data-source="all" data-category="video"><span data-i18n="tab_all">Tumu</span></button>
+          <button class="btn btn-secondary btn-sm source-tab" data-source="download" data-category="video"><span data-i18n="tab_downloaded">Indirilenler</span></button>
+          <button class="btn btn-secondary btn-sm source-tab" data-source="external" data-category="video"><span data-i18n="tab_external">Harici</span></button>
+        </div>
+      </div>
+      <div class="video-grid" id="videoGrid"></div>
+      <div class="empty-state" id="videoEmpty" style="display:none"><div class="icon">🎥</div><div data-i18n="no_video">Henuz video yok</div></div>
+    </section>
+
+    <section class="page" id="page-panel">
+      <h1 class="page-title" data-i18n="panel_title">Video Panel</h1>
+
+      <div class="glass-card" style="margin-bottom:16px">
+        <div class="section-title" style="margin-bottom:12px" data-i18n="panel_download">İndirme</div>
+        <div class="url-input-section">
+          <input type="text" class="url-input" id="urlInput" placeholder="https://... video URL'sini yapistir">
+          <button class="btn btn-primary" onclick="analyzeUrl()" data-i18n="btn_analyze">Analiz Et</button>
+        </div>
+        <div id="analyzeList"></div>
+      </div>
+
+      <div class="glass-card" style="margin-bottom:16px">
+        <div class="section-title" style="margin-bottom:12px" data-i18n="panel_queue">İndirme Kuyrugu</div>
+        <div id="queueList"></div>
+        <div id="queueEmpty" class="empty-state"><div style="font-size:2rem;opacity:0.3">⏳</div><div data-i18n="queue_empty">Kuyruk bos</div></div>
+      </div>
+
+      <div class="glass-card" style="margin-top:16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="section-title" data-i18n="panel_history">İndirme Gecmisi</div>
+          <button class="btn btn-danger btn-sm" onclick="clearHistory()" data-i18n="btn_clear_history">🗑 Gecmisi Temizle</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="history-table">
+            <thead><tr><th data-i18n="th_date">Tarih</th><th data-i18n="th_title">Baslik</th><th data-i18n="th_category">Kategori</th><th data-i18n="th_status">Durum</th><th data-i18n="th_error">Hata</th></tr></thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-settings">
+      <h1 class="page-title" data-i18n="settings_title">Ayarlar</h1>
+
+      <div class="settings-grid">
+        <div class="glass-card">
+          <div class="section-title" style="margin-bottom:12px">🌐 Dil / Language</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn lang-btn-settings active" data-lang="tr" id="langBtnTR" onclick="setLang('tr')">🇹🇷 Türkçe</button>
+            <button class="btn lang-btn-settings" data-lang="en" id="langBtnEN" onclick="setLang('en')">🇬🇧 English</button>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="section-title" style="margin-bottom:12px">🔌 Eklenti Yönetimi</div>
+          <div class="setting-desc" style="margin-bottom:8px">AniFrame extension'ı tarayıcılarınıza kurun</div>
+          <button class="btn btn-primary btn-sm" onclick="loadBrowsers()" style="margin-bottom:10px">🔍 Tarayıcıları Tara</button>
+          <div id="browserList" style="font-size:11px;color:var(--text-muted)">Tarama butonuna tıklayın</div>
+        </div>
+
+        <div class="glass-card">
+          <div class="section-title" style="margin-bottom:12px">📁 Harici Klasörler</div>
+          <div id="folderList"></div>
+          <div id="folderEmpty" class="empty-state"><div style="font-size:1.5rem;opacity:0.3">📁</div><div data-i18n="folder_empty">Henuz klasor eklenmedi</div></div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <input type="text" class="form-select" id="folderPathInput" placeholder="Klasor yolu (ornek: C:\Users\Videos)" style="flex:1;min-width:200px">
+            <select class="form-select" id="folderCategory" style="width:140px">
+              <option value="auto" selected data-i18n="cat_auto">Otomatik</option>
+              <option value="dizi" data-i18n="cat_series">Dizi</option>
+              <option value="film" data-i18n="cat_movie">Film</option>
+              <option value="anime" data-i18n="cat_anime">Anime</option>
+              <option value="video" data-i18n="cat_video">Video</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="addFolderByPath()">+ Ekle</button>
+            <button class="btn btn-secondary btn-sm" onclick="scanAll()" data-i18n="btn_scan">Tara</button>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="section-title" style="margin-bottom:12px">📁 İndirme Konumu</div>
+          <div class="setting-desc" style="margin-bottom:8px" data-i18n="setting_download_path_desc">Videoların kaydedileceği varsayılan klasör</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input type="text" class="form-select" id="downloadPathInput" placeholder="C:\...\downloads" style="flex:1;min-width:200px">
+            <button class="btn btn-secondary btn-sm" onclick="browseDownloadPath()">📂 <span data-i18n="btn_browse">Gözat</span></button>
+            <button class="btn btn-primary btn-sm" onclick="saveDownloadPath()">💾 <span data-i18n="btn_save">Kaydet</span></button>
+          </div>
+          <div id="downloadPathMsg" style="font-size:11px;color:var(--text-muted);margin-top:4px"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="glass-card toast" id="toast" style="display:none"></div>
+<input type="file" id="folderPicker" webkitdirectory directory multiple style="display:none" onchange="handleFolderPick(event)">
+<input type="file" id="downloadFolderPicker" webkitdirectory directory multiple style="display:none" onchange="handleDownloadFolderPick(event)">
+
+<script>
+const I18N = {
+  tr: {
+    nav_home:"Ana Sayfa",nav_series:"Diziler",nav_movies:"Filmler",nav_anime:"Animeler",nav_video:"Videolar",nav_panel:"Video Panel",nav_settings:"Ayarlar",
+    home_title:"Ana Sayfa",stat_total:"Toplam Video",stat_size:"Toplam Boyut",stat_recent:"Bu Hafta İndirilen",stat_folders:"Harici Klasör",
+    recent_videos:"Son Eklenenler",page_series:"Diziler",page_movies:"Filmler",page_anime:"Animeler",page_video:"Videolar",
+    settings_title:"Ayarlar",panel_title:"Video Panel",tab_all:"Tümü",tab_downloaded:"İndirilenler",tab_external:"Harici",
+    no_series:"Henüz dizi yok",no_movies:"Henüz film yok",no_anime:"Henüz anime yok",no_video:"Henüz video yok",
+    panel_download:"İndirme",btn_analyze:"Analiz Et",label_category:"Kategori",label_save_path:"Kayıt Yolu",
+    btn_download:"İndirmeyi Başlat",panel_queue:"İndirme Kuyruğu",queue_empty:"Kuyruk boş",
+    panel_player:"Video Oynatıcı",player_noscript:"Video oynatıcı için JavaScript gerekli",
+    player_empty:"İzlemek için bir video seçin",panel_folders:"Harici Klasörler",
+    folder_empty:"Henüz klasör eklenmedi",btn_add_folder:"+ Klasör Ekle",btn_scan:"Tara",
+    folder_not_scanned:"Henüz taranmadı",
+    panel_history:"İndirme Geçmişi",th_date:"Tarih",th_title:"Başlık",th_category:"Kategori",th_status:"Durum",th_error:"Hata",
+    cat_auto:"Otomatik",cat_series:"Dizi",cat_movie:"Film",cat_anime:"Anime",cat_video:"Video",
+    status_completed:"Tamamlandı",status_failed:"Başarısız",status_pending:"Bekliyor",
+    status_downloading:"İndiriliyor",status_cancelled:"İptal",
+    toast_folder_added:"Klasör eklendi ve taranmaya başladı",
+    toast_scan_done:"Tarama tamamlandı: {count} video bulundu",
+    toast_dl_started:"İndirme başladı",
+    toast_dl_completed:"İndirme tamamlandı",
+    player_error_missing:"Video dosyası bulunamadı. Silinmiş veya taşınmış olabilir.",
+    player_error_network:"Video dosyasına erişilemedi. Bağlantıyı kontrol edin.",
+    player_error_playback:"Oynatma hatası",
+    history_empty:"Geçmiş boş",
+    btn_clear_history:"🗑 Geçmişi Temizle",
+    toast_history_cleared:"Geçmiş temizlendi",
+    analyze_queued:"Kuyruğa eklendi",analyze_processing:"Analiz ediliyor...",analyze_done:"Hazır",
+    setting_download_path_desc:"Videoların kaydedileceği varsayılan klasör",
+    btn_browse:"Gözat",btn_save:"Kaydet",
+    toast_path_saved:"İndirme konumu kaydedildi",
+  },
+  en: {
+    nav_home:"Home",nav_series:"TV Series",nav_movies:"Movies",nav_anime:"Anime",nav_video:"Videos",nav_panel:"Video Panel",nav_settings:"Settings",
+    home_title:"Home",stat_total:"Total Videos",stat_size:"Total Size",stat_recent:"This Week",stat_folders:"External Folders",
+    recent_videos:"Recently Added",page_series:"TV Series",page_movies:"Movies",page_anime:"Anime",page_video:"Videos",
+    settings_title:"Settings",panel_title:"Video Panel",tab_all:"All",tab_downloaded:"Downloaded",tab_external:"External",
+    no_series:"No series yet",no_movies:"No movies yet",no_anime:"No anime yet",no_video:"No videos yet",
+    panel_download:"Download",btn_analyze:"Analyze",label_category:"Category",label_save_path:"Save Path",
+    btn_download:"Start Download",panel_queue:"Download Queue",queue_empty:"Queue is empty",
+    panel_player:"Video Player",player_noscript:"JavaScript required for video player",
+    player_empty:"Select a video to play",panel_folders:"External Folders",
+    folder_empty:"No folders added yet",btn_add_folder:"+ Add Folder",btn_scan:"Scan",
+    panel_history:"Download History",th_date:"Date",th_title:"Title",th_category:"Category",th_status:"Status",
+    cat_auto:"Automatic",cat_series:"TV Series",cat_movie:"Movie",cat_anime:"Anime",cat_video:"Video",
+    status_completed:"Completed",status_failed:"Failed",status_pending:"Pending",
+    status_downloading:"Downloading",status_cancelled:"Cancelled",
+    toast_folder_added:"Folder added and scanning started",
+    toast_scan_done:"Scan complete: {count} videos found",
+    toast_dl_started:"Download started",
+    toast_dl_completed:"Download completed",
+    folder_not_scanned:"Not scanned yet",
+    player_error_missing:"Video file not found. It may have been deleted or moved.",
+    player_error_network:"Cannot access video file. Check your connection.",
+    player_error_playback:"Playback error",
+    history_empty:"History is empty",
+    btn_clear_history:"🗑 Clear History",
+    toast_history_cleared:"History cleared",
+    analyze_queued:"Queued",analyze_processing:"Analyzing...",analyze_done:"Ready",
+    setting_download_path_desc:"Default folder for saving videos",
+    btn_browse:"Browse",btn_save:"Save",
+    toast_path_saved:"Download location saved",
+  }
+};
+
+function escapeHtml(str) {
+  if (!str) return "";
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function guessCategoryFromUrl(url) {
+  try {
+    const u = new URL(url);
+    const h = u.hostname.toLowerCase();
+    const full = (h + u.pathname + u.search).toLowerCase();
+
+    if (/youtube|youtu\.be|vimeo|dailymotion|twitch|streamable|clips\.twitch|twitter\.com\/.*\/status|x\.com\/.*\/status|instagram\.com\/(reel|p)\//.test(h)) return "video";
+
+    if (/anime|animedostu|animeci|chia-anime|gogoanime|animexin|anime-izle|anime4|Kayoanime|animekrál|9anime|animepahe|zorluanime|toonanime|animezon/.test(full)) return "anime";
+
+    if (/s\d{1,2}e\d{1,3}|season|episode|bolum|bölüm|sezonal|seri\b|dizi|dizilab|dizipub|dizibox|dizigom|pifilmizle|hdfilmcehennemi|turkcealtyazi| dizigom|watchseries|sockshare|putlocker|fmovies|solarmovie|0123movies|yesmovies|fmoviesz|bflix|lookmovie/.test(full)) return "dizi";
+
+    if (/film|movie|sinema|sinemalar|beyazperde|filmizle|hdfilm|fullhdfilm|izle|watch|primevideo|netflix\.com\/(watch|title)/.test(full)) return "film";
+
+  } catch(e) {}
+  return "video";
+}
+
+let selectedFormat = "best";
+
+function t(key, params) {
+  let txt = (I18N[currentLang] && I18N[currentLang][key]) || I18N["tr"][key] || key;
+  if (params) { Object.keys(params).forEach(k => txt = txt.replace(`{${k}}`, params[k])); }
+  return txt;
+}
+
+let currentLang = localStorage.getItem("aniframe_lang") || "tr";
+let currentPage = "home";
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem("aniframe_lang", lang);
+  document.querySelectorAll(".lang-btn-settings").forEach(b => b.classList.toggle("active", b.dataset.lang === lang));
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+  document.querySelectorAll("option[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+  navigateTo(currentPage, true);
+}
+
+function navigateTo(page, force) {
+  if (page === currentPage && !force) return;
+  currentPage = page;
+
+  document.querySelectorAll(".nav-link").forEach(b => b.classList.remove("active"));
+  const navEl = document.querySelector(`.nav-link[data-page="${page}"]`);
+  if (navEl) navEl.classList.add("active");
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("visible"));
+  const pageEl = document.getElementById("page-" + page);
+  if (pageEl) pageEl.classList.add("visible");
+
+  if (page === "home") loadHomeData();
+  if (page === "series") loadCategory("dizi", "all", "series");
+  if (page === "movies") loadCategory("film", "all", "movies");
+  if (page === "anime") loadCategory("anime", "all", "anime");
+  if (page === "video") loadCategory("video", "all", "video");
+  if (page === "panel") { loadQueue(); loadHistory(); }
+  if (page === "settings") { loadSettingsPage(); }
+}
+
+function loadSettingsPage() {
+  loadFolders();
+  loadHistory();
+  loadQueue();
+  loadDownloadPath();
+}
+
+async function loadDownloadPath() {
+  const s = await api("/api/settings");
+  const input = document.getElementById("downloadPathInput");
+  if (input && s.settings && s.settings.download_path) {
+    input.value = s.settings.download_path;
+  } else if (input) {
+    input.value = "";
+  }
+}
+
+function browseDownloadPath() {
+  document.getElementById("downloadFolderPicker").click();
+}
+
+async function handleDownloadFolderPick(e) {
+  const files = e.target.files;
+  if (!files || files.length === 0) return;
+  const firstFile = files[0];
+  const folderPath = firstFile.path || firstFile.webkitRelativePath || "";
+  if (!folderPath || folderPath === firstFile.name) {
+    showToast("Klasör yolu alınamadı. Manuel olarak girin.");
+    return;
+  }
+  document.getElementById("downloadPathInput").value = folderPath;
+  e.target.value = "";
+}
+
+async function saveDownloadPath() {
+  const path = document.getElementById("downloadPathInput").value.trim();
+  if (!path) {
+    showToast("Lütfen bir klasör yolu girin");
+    return;
+  }
+  const r = await api("/api/settings", {
+    method: "POST",
+    body: JSON.stringify({ download_path: path }),
+  });
+  if (!r.error) {
+    showToast(t("toast_path_saved"));
+    document.getElementById("downloadPathMsg").textContent = "✓ " + path;
+  } else {
+    showToast("Hata: " + (r.error || "Kaydedilemedi"));
+  }
+}
+
+async function loadBrowsers() {
+  const list = document.getElementById("browserList");
+  list.innerHTML = '<span style="color:var(--text-muted)">Taraniyor...</span>';
+  try {
+    const res = await fetch("/api/browsers");
+    const data = await res.json();
+    const browsers = data.browsers || [];
+    if (browsers.length === 0) {
+      list.innerHTML = '<span style="color:#f59e0b">Hiçbir Chromium tarayicisi bulunamadi</span>';
+      return;
+    }
+    list.innerHTML = browsers.map(b => {
+      const isChrome = b.key === "chrome";
+      const chrome137 = b.chrome_137_plus;
+      const method = b.installation_method || "load_extension";
+      const methodLabel = method === "hmac_forgery" ? "Kalici"
+        : method === "cdp" ? "Oturum"
+        : "Oturum";
+      const methodColor = method === "hmac_forgery" ? "#10b981" : "#f59e0b";
+
+      let warnBadge = "";
+      if (isChrome && chrome137) {
+        warnBadge = '<span style="background:rgba(245,158,11,0.15);color:#fbbf24;padding:1px 5px;border-radius:4px;font-size:9px;margin-left:4px">137+</span>';
+      }
+
+      const profiles = b.profiles || [];
+      const profileHtml = profiles.length > 1
+        ? `<div style="margin-top:4px;padding-left:12px;border-left:2px solid rgba(255,255,255,0.06)">
+            ${profiles.map(p => {
+              const pStatus = p.extension_installed
+                ? '<span style="color:#10b981">✓</span>'
+                : '<span style="color:var(--text-muted)">✗</span>';
+              return `<div style="display:flex;align-items:center;gap:4px;padding:2px 0;font-size:10px">
+                ${pStatus} <span style="color:var(--text-muted)">${escapeHtml(p.name)}</span>
+              </div>`;
+            }).join("")}
+          </div>`
+        : "";
+
+      const statusText = b.extension_installed
+        ? `<span style="color:#10b981">✓ Kurulu</span> <span style="color:${methodColor};font-size:9px;margin-left:3px">(${methodLabel})</span>`
+        : '<span style="color:var(--text-muted)">Kurulu degil</span>';
+
+      return `<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <span style="font-weight:500">${escapeHtml(b.name)}</span>
+            ${warnBadge}
+            <span style="color:var(--text-muted);margin-left:6px;font-size:11px">v${escapeHtml(b.version)}</span>
+            ${b.browser_running ? '<span style="color:#f59e0b;font-size:9px;margin-left:4px">● Acik</span>' : ''}
+            <div style="margin-top:2px">${statusText}</div>
+          </div>
+          <div style="display:flex;gap:4px">
+            ${b.extension_installed
+              ? `<button class="btn btn-secondary btn-sm" onclick="uninstallExtension('${b.key}')" style="font-size:10px">Kaldır</button>`
+              : `<button class="btn btn-primary btn-sm" onclick="installExtension('${b.key}')">Kur</button>`
+            }
+          </div>
+        </div>
+        ${profileHtml}
+      </div>`;
+    }).join("");
+  } catch {
+    list.innerHTML = '<span style="color:#ef4444">Baglanti hatasi</span>';
+  }
+}
+
+async function installExtension(browserKey) {
+  const list = document.getElementById("browserList");
+  list.innerHTML = '<span style="color:var(--text-muted)">Kuruluyor...</span>';
+  try {
+    const res = await fetch("/api/extension/install", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({browser: browserKey, launch_browser: true}),
+    });
+    const data = await res.json();
+    if (data.success) {
+      const methodBadge = data.method === "hmac_forgery"
+        ? '<span style="background:rgba(16,185,129,0.15);color:#10b981;padding:2px 6px;border-radius:4px;font-size:10px;margin-left:6px">Kalici</span>'
+        : data.method === "cdp"
+        ? '<span style="background:rgba(245,158,11,0.15);color:#fbbf24;padding:2px 6px;border-radius:4px;font-size:10px;margin-left:6px">Oturum icin</span>'
+        : '';
+      const profiles = data.profiles || [];
+      list.innerHTML = `<div style="padding:8px;background:rgba(16,185,129,0.08);border-radius:6px;border:1px solid rgba(16,185,129,0.2)">
+        <div style="color:#10b981;font-weight:500;margin-bottom:6px">✅ ${escapeHtml(data.message || "Kurulum tamamlandi")}${methodBadge}</div>
+        ${profiles.length > 0 ? `<div style="color:var(--text-muted);font-size:10px;margin-bottom:4px">Profiller: ${profiles.map(p => escapeHtml(p)).join(', ')}</div>` : ''}
+        ${(data.instructions || []).map(i => `<div style="color:var(--text-muted);font-size:11px;margin-bottom:3px">${escapeHtml(i)}</div>`).join("")}
+        <button class="btn btn-secondary btn-sm" onclick="loadBrowsers()" style="margin-top:8px">↻ Yeniden Tara</button>
+      </div>`;
+    } else if (data.requires_close) {
+      list.innerHTML = `<div style="padding:8px;background:rgba(245,158,11,0.08);border-radius:6px;border:1px solid rgba(245,158,11,0.2)">
+        <div style="color:#f59e0b;font-weight:500;margin-bottom:6px">⚠️ ${escapeHtml(data.error || "Tarayiciyi kapatmaniz gerekiyor")}</div>
+        ${(data.fallback_instructions || []).map(i => `<div style="color:var(--text-muted);font-size:11px;margin-bottom:3px">${escapeHtml(i)}</div>`).join("")}
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn btn-primary btn-sm" onclick="installExtension('${browserKey}')">↻ Tekrar Dene</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadBrowsers()">Geri Don</button>
+        </div>
+      </div>`;
+    } else {
+      list.innerHTML = `<span style="color:#ef4444">Hata: ${escapeHtml(data.error || "Kurulum basarisiz")}</span>
+        <button class="btn btn-secondary btn-sm" onclick="loadBrowsers()" style="margin-top:8px">↻ Yeniden Dene</button>`;
+    }
+  } catch {
+    list.innerHTML = '<span style="color:#ef4444">Baglanti hatasi</span>';
+  }
+}
+
+async function uninstallExtension(browserKey) {
+  if (!confirm("Bu tarayicidaki AniFrame extension kalici olarak kaldirilacak. Emin misiniz?")) return;
+  const list = document.getElementById("browserList");
+  list.innerHTML = '<span style="color:var(--text-muted)">Kaldiriliyor...</span>';
+  try {
+    const res = await fetch("/api/extension/uninstall", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({browser: browserKey}),
+    });
+    const data = await res.json();
+    if (data.success) {
+      list.innerHTML = `<div style="padding:8px;background:rgba(16,185,129,0.08);border-radius:6px;border:1px solid rgba(16,185,129,0.2)">
+        <div style="color:#10b981;font-weight:500;margin-bottom:4px">✅ Extension kaldirildi</div>
+        <div style="color:var(--text-muted);font-size:10px">Profiller: ${(data.removed_profiles || []).map(p => escapeHtml(p)).join(', ')}</div>
+        <button class="btn btn-secondary btn-sm" onclick="loadBrowsers()" style="margin-top:8px">↻ Yeniden Tara</button>
+      </div>`;
+    } else {
+      list.innerHTML = `<span style="color:#ef4444">Hata: ${escapeHtml(data.error || "Kaldirma basarisiz")}</span>
+        <button class="btn btn-secondary btn-sm" onclick="loadBrowsers()" style="margin-top:8px">↻ Yeniden Dene</button>`;
+    }
+  } catch {
+    list.innerHTML = '<span style="color:#ef4444">Baglanti hatasi</span>';
+  }
+}
+
+setLang(currentLang);
+
+document.querySelectorAll(".nav-link").forEach(btn => {
+  btn.addEventListener("click", function() {
+    navigateTo(this.dataset.page, false);
+  });
+});
+
+document.querySelectorAll(".source-tab").forEach(btn => {
+  btn.addEventListener("click", function() {
+    const cat = this.dataset.category;
+    const gridId = cat === "dizi" ? "series" : cat === "film" ? "movies" : cat === "video" ? "video" : "anime";
+    document.querySelectorAll(`.source-tab[data-category="${cat}"]`).forEach(b => b.classList.remove("active"));
+    this.classList.add("active");
+    this.classList.remove("btn-secondary");
+    this.classList.add("btn-primary");
+    document.querySelectorAll(`.source-tab[data-category="${cat}"]:not(.active)`).forEach(b => {
+      b.classList.remove("btn-primary"); b.classList.add("btn-secondary");
+    });
+    loadCategory(cat, this.dataset.source, gridId);
+  });
+});
+
+function showToast(msg) {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.style.display = "block";
+  toast.style.animation = "none";
+  toast.offsetHeight;
+  toast.style.animation = "toastIn 0.3s ease";
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.style.display = "none"; }, 3000);
+}
+
+async function api(path, opts = {}) {
+  try {
+    const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...opts });
+    return await res.json();
+  } catch(e) {
+    console.error("API error:", e);
+    return { error: e.message };
+  }
+}
+
+function formatSize(bytes) {
+  if (!bytes || bytes === 0) return "0 B";
+  const u = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return (bytes / Math.pow(1024, i)).toFixed(1) + " " + u[i];
+}
+
+function formatDuration(sec) {
+  if (!sec) return "";
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  return h > 0 ? `${h}s ${m}dk` : `${m} dk`;
+}
+
+function videoCard(v, idx) {
+  const thumbHtml = v.thumb_path
+    ? `<img src="/api/thumbnail/${v.id}" onerror="this.style.display='none'" />`
+    : `<div class="icon">▶</div>`;
+  const badgeClass = v.source === "external" ? "external" : v.category || "";
+  const badgeText = v.source === "external" ? "📁" : (v.category === "dizi" ? "📺" : v.category === "film" ? "🎬" : v.category === "video" ? "🎥" : "🎌");
+  const meta = [];
+  if (v.quality) meta.push(v.quality);
+  if (v.season && v.episode) meta.push(`S${String(v.season).padStart(2,"0")}E${String(v.episode).padStart(2,"0")}`);
+  else if (v.episode) meta.push(`Bölüm ${v.episode}`);
+  if (v.file_size) meta.push(formatSize(v.file_size));
+
+  return `
+    <div class="video-card" onclick="playVideo(${v.id}, '${escapeHtml(v.source)}', ${idx})" data-id="${v.id}" data-source="${escapeHtml(v.source)}">
+      <div class="video-card-thumb">
+        ${thumbHtml}
+        <span class="video-card-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="video-card-body">
+        <div class="video-card-title">${escapeHtml(v.file_name || (v.file_path ? v.file_path.split("/").pop().split("\\").pop() : "Video"))}</div>
+        <div class="video-card-meta">${meta.join(" · ")}</div>
+      </div>
+    </div>`;
+}
+
+function renderGrid(gridId, videos, emptyId) {
+  const grid = document.getElementById(gridId);
+  const empty = document.getElementById(emptyId);
+  if (!videos || videos.length === 0) {
+    grid.innerHTML = "";
+    if (empty) empty.style.display = "block";
+    return;
+  }
+  if (empty) empty.style.display = "none";
+  grid.innerHTML = videos.map((v, i) => videoCard(v, i)).join("");
+}
+
+async function loadHomeData() {
+  const stats = await api("/api/stats");
+  if (!stats.error) {
+    document.getElementById("statTotal").textContent = stats.total_videos || 0;
+    document.getElementById("statSize").textContent = (stats.total_size_gb || 0) + " GB";
+    document.getElementById("statRecent").textContent = stats.recent_downloads || 0;
+    const f = await api("/api/folders");
+    document.getElementById("statFolders").textContent = (f.folders || []).length;
+  }
+  const v = await api("/api/videos?category=all");
+  if (v.videos) renderGrid("recentGrid", v.videos.slice(0, 12), null);
+}
+
+async function loadCategory(cat, source, gridId) {
+  let url = `/api/videos?category=${cat}`;
+  const v = await api(url);
+  let videos = v.videos || [];
+  if (source === "download") videos = videos.filter(x => x.source === "download");
+  if (source === "external") videos = videos.filter(x => x.source === "external");
+  renderGrid(gridId + "Grid", videos, gridId + "Empty");
+}
+
+let analyzeQueue = [];
+let analyzeRunning = false;
+let analyzeIdCounter = 0;
+let analysisCards = {};
+
+function removeAnalyze(id) {
+  delete analysisCards[id];
+  const el = document.getElementById("analyze-" + id);
+  if (el) el.remove();
+}
+
+function createAnalyzeCard(id, url) {
+  const list = document.getElementById("analyzeList");
+  const card = document.createElement("div");
+  card.className = "analyze-card";
+  card.id = "analyze-" + id;
+  const shortUrl = url.length > 80 ? url.slice(0, 80) + "..." : url;
+  card.innerHTML = `
+    <div class="analyze-header">
+      <span class="analyze-url" title="${escapeHtml(url)}">${escapeHtml(shortUrl)}</span>
+      <span class="analyze-status-badge pending">${t("analyze_queued")}</span>
+      <button class="btn btn-danger btn-sm" onclick="removeAnalyze(${id})">✕</button>
+    </div>
+    <div class="analyze-body" style="display:none"></div>
+  `;
+  list.prepend(card);
+  return card;
+}
+
+async function analyzeUrl() {
+  const url = document.getElementById("urlInput").value.trim();
+  if (!url) return;
+  document.getElementById("urlInput").value = "";
+  document.getElementById("urlInput").focus();
+
+  const id = ++analyzeIdCounter;
+  analysisCards[id] = { url, status: "pending", result: null, selectedFormat: "best" };
+  createAnalyzeCard(id, url);
+  analyzeQueue.push(id);
+  processQueue();
+}
+
+async function processQueue() {
+  if (analyzeRunning || analyzeQueue.length === 0) return;
+  analyzeRunning = true;
+
+  const id = analyzeQueue.shift();
+  const card = analysisCards[id];
+  if (!card || !document.getElementById("analyze-" + id)) {
+    analyzeRunning = false;
+    processQueue();
+    return;
+  }
+
+  card.status = "analyzing";
+  const el = document.getElementById("analyze-" + id);
+  const badge = el.querySelector(".analyze-status-badge");
+  badge.className = "analyze-status-badge analyzing";
+  badge.textContent = t("analyze_processing");
+
+  const result = await api("/api/analyze", { method: "POST", body: JSON.stringify({ url: card.url }) });
+  card.result = result;
+
+  if (result.error) {
+    card.status = "error";
+    badge.className = "analyze-status-badge error";
+    badge.textContent = "Hata";
+    const body = el.querySelector(".analyze-body");
+    body.innerHTML = `<div class="analyze-error">${escapeHtml(result.error)}</div>`;
+    body.style.display = "block";
+  } else {
+    card.status = "done";
+    badge.className = "analyze-status-badge done";
+    badge.textContent = t("analyze_done");
+
+    const sourceBadge = result.source === "browser"
+      ? '<span class="source-badge browser">Tarayıcı</span>'
+      : '<span class="source-badge ytdlp">yt-dlp</span>';
+
+    const formats = [];
+    const seen = new Set();
+    (result.formats || []).forEach(f => { if (!seen.has(f.label)) { seen.add(f.label); formats.push(f); } });
+    let formatHtml = formats.map((f, i) =>
+      `<div class="format-item${i===0?' selected':''}" data-fid="${f.id}" onclick="selectFmt(this,'${f.id}',${id})">${f.label}</div>`
+    ).join("");
+    if (!formatHtml) formatHtml = `<div class="format-item selected" data-fid="best" onclick="selectFmt(this,'best',${id})">En İyi</div>`;
+    card.selectedFormat = formats.length > 0 ? formats[0].id : "best";
+
+    const body = el.querySelector(".analyze-body");
+    const guessedCat = guessCategoryFromUrl(card.url);
+    body.innerHTML = `
+      <div class="analyze-title">${escapeHtml(result.title || "Video")} ${sourceBadge}</div>
+      <div class="format-grid">${formatHtml}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <select class="form-select" id="dlCategory-${id}" style="flex:1;min-width:120px">
+          <option value="auto" data-i18n="cat_auto">${t("cat_auto")}</option>
+          <option value="dizi"${guessedCat==="dizi"?" selected":""}>${t("cat_series")}</option>
+          <option value="film"${guessedCat==="film"?" selected":""}>${t("cat_movie")}</option>
+          <option value="anime"${guessedCat==="anime"?" selected":""}>${t("cat_anime")}</option>
+          <option value="video"${guessedCat==="video"?" selected":""}>${t("cat_video")}</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="startDownloadForCard(${id})" style="flex-shrink:0">${t("btn_download")}</button>
+      </div>
+    `;
+    body.style.display = "block";
+  }
+
+  analyzeRunning = false;
+  processQueue();
+}
+
+function selectFmt(el, fid, cardId) {
+  if (analysisCards[cardId]) analysisCards[cardId].selectedFormat = fid;
+  el.parentElement.querySelectorAll(".format-item").forEach(e => e.classList.remove("selected"));
+  el.classList.add("selected");
+}
+
+async function startDownloadForCard(id) {
+  const card = analysisCards[id];
+  if (!card || !card.result) return;
+
+  const el = document.getElementById("analyze-" + id);
+  if (!el) return;
+  const catSelect = el.querySelector(`#dlCategory-${id}`);
+  let category = catSelect ? catSelect.value : "video";
+  if (category === "auto") {
+    category = guessCategoryFromUrl(card.url);
+  }
+
+  const body = { url: card.url, category, format_id: card.selectedFormat || "best" };
+
+  if (card.result.source === "browser") {
+    body.is_browser_url = true;
+    body.custom_video_url = card.result.video_url || (card.result.formats?.[0]?.detail) || card.url;
+    body.custom_title = card.result.title || "";
+  }
+
+  const r = await api("/api/download", { method: "POST", body: JSON.stringify(body) });
+  if (!r.error) {
+    showToast(t("toast_dl_started"));
+    removeAnalyze(id);
+    loadQueue();
+  } else {
+    showToast("Hata: " + (r.error || r.detail));
+  }
+}
+
+async function loadQueue() {
+  const q = await api("/api/queue");
+  const list = document.getElementById("queueList");
+  const empty = document.getElementById("queueEmpty");
+  const all = [...(q.active || []), ...(q.pending || [])];
+  if (all.length === 0) { list.innerHTML = ""; empty.style.display = "block"; return; }
+  empty.style.display = "none";
+  list.innerHTML = all.map(item => `
+    <div class="queue-item">
+      <div class="info">
+        <div class="title">${escapeHtml(item.url)}</div>
+        <div class="meta">${escapeHtml(item.speed || "")} ${item.eta ? "· Kalan: " + escapeHtml(item.eta) : ""}</div>
+        ${item.progress !== undefined ? `<div class="progress-bar"><div class="progress-fill" style="width:${item.progress}%"></div></div>` : ""}
+      </div>
+      <span class="queue-status ${item.status}">${t("status_"+item.status)}${item.progress !== undefined ? " " + Math.round(item.progress) + "%" : ""}</span>
+      ${item.status === "downloading" || item.status === "pending" ? `<button class="btn btn-danger btn-sm" onclick="cancelDownload(${item.id})">✕</button>` : ""}
+    </div>
+  `).join("");
+}
+
+async function cancelDownload(id) {
+  await api("/api/queue/" + id, { method: "DELETE" });
+  loadQueue();
+}
+
+async function loadFolders() {
+  const f = await api("/api/folders");
+  const list = document.getElementById("folderList");
+  const empty = document.getElementById("folderEmpty");
+  if (!f.folders || f.folders.length === 0) { list.innerHTML = ""; empty.style.display = "block"; return; }
+  empty.style.display = "none";
+  list.innerHTML = f.folders.map(fd => `
+    <div class="folder-item">
+      <span class="path" title="${escapeHtml(fd.folder_path)}">📁 ${escapeHtml(fd.folder_path)}</span>
+      <span style="font-size:0.75rem;color:var(--text-muted)">${fd.last_scanned ? "Son: " + fd.last_scanned.slice(0,16) : t("folder_not_scanned")}</span>
+      <button class="btn btn-danger btn-sm" onclick="removeFolder(${fd.id})">🗑</button>
+    </div>
+  `).join("");
+}
+
+async function removeFolder(id) {
+  await api("/api/folders/" + id, { method: "DELETE" });
+  loadFolders();
+}
+
+async function scanAll() {
+  showToast("Taranıyor...");
+  const r = await api("/api/folders/scan", { method: "POST" });
+  showToast(t("toast_scan_done", { count: r.found || 0 }));
+  loadFolders();
+  loadHomeData();
+}
+
+function openFolderPicker() {
+  document.getElementById("folderPicker").click();
+}
+
+function guessCategoryFromPath(folderPath) {
+  const p = folderPath.toLowerCase().replace(/\\/g, "/");
+  if (/anime|animasyon|cartoon|çizgi/.test(p)) return "anime";
+  if (/dizi|series|season|tv/.test(p)) return "dizi";
+  if (/film|movie|sinema|cinema/.test(p)) return "film";
+  return "video";
+}
+
+async function addFolderByPath() {
+  const input = document.getElementById("folderPathInput");
+  const catSelect = document.getElementById("folderCategory");
+  const folderPath = input.value.trim();
+  if (!folderPath) {
+    showToast("Klasor yolu girin");
+    return;
+  }
+  let category = catSelect ? catSelect.value : "video";
+  if (category === "auto") {
+    category = guessCategoryFromPath(folderPath);
+  }
+  showToast(t("toast_folder_added"));
+  const r = await api("/api/folders", {
+    method: "POST",
+    body: JSON.stringify({ path: folderPath, category: category, label: "" })
+  });
+  if (r.error) {
+    showToast("Hata: " + r.error);
+  } else {
+    input.value = "";
+    loadFolders();
+  }
+}
+
+async function handleFolderPick(e) {
+  const files = e.target.files;
+  if (!files || files.length === 0) return;
+  const firstFile = files[0];
+  const folderPath = firstFile.path || firstFile.webkitRelativePath || "";
+  const catSelect = document.getElementById("folderCategory");
+  let category = catSelect ? catSelect.value : "video";
+  if (category === "auto") {
+    category = guessCategoryFromPath(folderPath);
+  }
+  if (!folderPath || folderPath === firstFile.name) {
+    showToast("Klasor yolu alinamadi. Manuel olarak girin.");
+    return;
+  }
+  showToast(t("toast_folder_added"));
+  const r = await api("/api/folders", {
+    method: "POST",
+    body: JSON.stringify({ path: folderPath, category: category, label: "" })
+  });
+  loadFolders();
+  e.target.value = "";
+}
+
+async function playVideo(id, source, idx) {
+  try {
+    const r = await api(`/api/play-local/${id}`);
+    if (r.error) {
+      showToast(r.error);
+    } else {
+      showToast("Oynatıcı açılıyor...");
+    }
+  } catch(e) {
+    showToast(t("player_error_network"));
+  }
+}
+
+async function loadHistory() {
+  const r = await api("/api/history");
+  const tbody = document.getElementById("historyBody");
+  if (!r.history || r.history.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">${t("history_empty")}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = r.history.map(h => {
+    let errCell = "";
+    if (h.error_message && h.status === "failed") {
+      const short = h.error_message.length > 60 ? h.error_message.slice(0,60)+"..." : h.error_message;
+      errCell = `<td title="${escapeHtml(h.error_message)}" style="color:#ef4444;cursor:help;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(short)}</td>`;
+    } else {
+      errCell = "<td></td>";
+    }
+    return `<tr style="${h.status==='failed'?'background:rgba(239,68,68,0.06)':''}">
+      <td>${escapeHtml((h.created_at||"").slice(0,16))}</td>
+      <td>${escapeHtml(h.title || (h.url ? h.url.slice(0,60) : ""))}</td>
+      <td>${escapeHtml(h.category || "")}</td>
+      <td><span class="queue-status ${h.status}">${t("status_"+h.status)}</span></td>
+      ${errCell}
+    </tr>`;
+  }).join("");
+}
+
+async function clearHistory() {
+  await api("/api/history", { method: "DELETE" });
+  showToast(t("toast_history_cleared"));
+  loadHistory();
+}
+
+const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
+let ws = null;
+let wsReconnectDelay = 1000;
+let queueLoadTimeout = null;
+
+function connectWS() {
+  if (ws) {
+    try { ws.close(); } catch(e) {}
+    ws = null;
+  }
+  ws = new WebSocket(`${wsProtocol}//${location.host}/ws`);
+  ws.onmessage = (e) => {
+    const data = JSON.parse(e.data);
+    if (queueLoadTimeout) clearTimeout(queueLoadTimeout);
+    queueLoadTimeout = setTimeout(() => loadQueue(), 500);
+    if (data.status === "completed") {
+      showToast(t("toast_dl_completed"));
+      loadHomeData();
+    }
+    if (data.status === "failed") {
+      const err = data.error ? (data.error.length > 80 ? data.error.slice(0,80)+"..." : data.error) : t("status_failed");
+      showToast("❌ " + err);
+      loadQueue();
+    }
+  };
+  ws.onopen = () => { wsReconnectDelay = 1000; };
+  ws.onclose = () => {
+    ws = null;
+    setTimeout(connectWS, wsReconnectDelay);
+    wsReconnectDelay = Math.min(wsReconnectDelay * 2, 30000);
+  };
+  ws.onerror = () => { if (ws) { try { ws.close(); } catch(e) {} } };
+}
+
+connectWS();
+setInterval(() => { if (currentPage === "panel") loadQueue(); }, 3000);
+</script>
+</body>
+</html>

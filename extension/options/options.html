@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AniFrame Extension Ayarları</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0a0a0f; color:#e0e0e0; padding:40px; max-width:600px; margin:0 auto; }
+h1 { font-size:22px; font-weight:700; margin-bottom:8px; background:linear-gradient(135deg,#8b5cf6,#10b981); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.sub { color:#666; font-size:13px; margin-bottom:30px; }
+.card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:20px; margin-bottom:16px; }
+.card-title { font-weight:600; font-size:14px; margin-bottom:12px; color:#c0c0c0; }
+.form-group { margin-bottom:14px; }
+.form-label { display:block; font-size:12px; color:#888; margin-bottom:6px; }
+.form-input { width:100%; padding:8px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#e0e0e0; font-size:13px; }
+.form-input:focus { border-color:#8b5cf6; outline:none; }
+.form-select { width:100%; padding:8px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#e0e0e0; font-size:13px; }
+.form-check { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.form-check input[type="checkbox"] { accent-color:#8b5cf6; width:16px; height:16px; }
+.form-check label { font-size:13px; cursor:pointer; }
+.btn-row { display:flex; gap:10px; margin-top:20px; }
+.btn { padding:10px 20px; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; transition:all 0.2s; }
+.btn-primary { background:linear-gradient(135deg,#8b5cf6,#10b981); color:#fff; }
+.btn-primary:hover { filter:brightness(1.15); }
+.btn-secondary { background:rgba(255,255,255,0.08); color:#c0c0c0; }
+.btn-secondary:hover { background:rgba(255,255,255,0.14); }
+.btn-danger { background:rgba(239,68,68,0.15); color:#ef4444; }
+.btn-danger:hover { background:rgba(239,68,68,0.25); }
+.status-msg { font-size:12px; margin-top:8px; padding:6px 10px; border-radius:4px; }
+.status-msg.ok { background:rgba(16,185,129,0.1); color:#10b981; }
+.status-msg.warn { background:rgba(245,158,11,0.1); color:#f59e0b; }
+</style>
+</head>
+<body>
+<h1>AniFrame Extension v2.0</h1>
+<p class="sub">Extension ayarlarını buradan yönetebilirsiniz</p>
+
+<div class="card">
+  <div class="card-title">🔗 Bağlantı</div>
+  <div class="form-group">
+    <label class="form-label">Backend URL</label>
+    <input class="form-input" id="backendUrl" placeholder="http://localhost:8000">
+  </div>
+  <div id="connStatus" class="status-msg">Kontrol ediliyor...</div>
+</div>
+
+<div class="card">
+  <div class="card-title">📥 İndirme</div>
+  <div class="form-group">
+    <label class="form-label">Varsayılan Kalite</label>
+    <select class="form-select" id="quality">
+      <option value="best">En İyi (mevcut en yüksek)</option>
+      <option value="2160">4K (1080p'yi GPU ile büyüt) ⚡</option>
+      <option value="1080">1080p</option>
+      <option value="720">720p</option>
+      <option value="480">480p</option>
+      <option value="360">360p</option>
+    </select>
+    <div style="font-size:11px;color:#777;margin-top:4px">4K: kaynak 1080p ise GPU ile büyütülür (gerçek detay eklemez, ekstra süre alır)</div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label">Varsayılan Kategori</label>
+    <select class="form-select" id="category">
+      <option value="auto">Otomatik</option>
+      <option value="film">Film</option>
+      <option value="dizi">Dizi</option>
+      <option value="anime">Anime</option>
+      <option value="video">Video</option>
+    </select>
+  </div>
+  <div class="form-check">
+    <input type="checkbox" id="autoDownload">
+    <label for="autoDownload">Video algılanınca otomatik indir</label>
+  </div>
+  <div class="form-check">
+    <input type="checkbox" id="notifications">
+    <label for="notifications">Bildirimleri göster</label>
+  </div>
+  <div class="form-check">
+    <input type="checkbox" id="adFilter">
+    <label for="adFilter">Reklam filtresini etkinleştir</label>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">🔧 Gelişmiş</div>
+  <div class="form-check">
+    <input type="checkbox" id="wsReconnect">
+    <label for="wsReconnect">WebSocket otomatik yeniden bağlanma</label>
+  </div>
+  <div class="form-check">
+    <input type="checkbox" id="debugLogs">
+    <label for="debugLogs">Hata ayıklama logları</label>
+  </div>
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-primary" id="btnSave">💾 Kaydet</button>
+  <button class="btn btn-secondary" id="btnReset">🔄 Varsayılanlara Dön</button>
+  <button class="btn btn-danger" id="btnClear">🗑 Önbelleği Temizle</button>
+</div>
+<div class="status-msg ok" id="saveMsg" style="display:none;margin-top:12px">✅ Ayarlar kaydedildi</div>
+
+<script src="options.js"></script>
+</body>
+</html>

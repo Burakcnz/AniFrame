@@ -1,0 +1,99 @@
+# AniFrame Video Downloader
+
+A universal video downloader with a modern web UI, focusing on anime, movies, and TV series. Built with Python FastAPI backend and yt-dlp engine.
+
+## Technology Stack
+- Python 3.11+ with FastAPI
+- yt-dlp (video download engine, 1800+ sites)
+- Agent-Reach (platform channel availability: bilibili, twitter, web/Jina Reader, youtube)
+- Scrapling (StealthyFetcher Cloudflare bypass, DynamicFetcher, Spider multi-page crawl)
+- Playwright (headless browser automation with stealth mode)
+- ffmpeg (HLS/DASH stream muxing and thumbnail generation)
+- Video.js (web video player with PIP, subtitles, speed control)
+- SQLite (lightweight database)
+- WebSocket (real-time download progress)
+- Tkinter (server control panel)
+- cryptography (HLS AES-128 decryption)
+- libtorrent (optional - magnet/torrent download)
+
+## Features
+- Download videos from 1800+ sites (YouTube, Crunchyroll, etc.)
+- **Stealth browser** — anti-bot detection bypass (Chrome envasiyonu, WebGL override, navigator patching)
+- **Ad blocking** — 50+ ad/tracker domain filter, popup/kapatma, request interception
+- **HLS/DASH manifest parsing** — m3u8/mpd kalite analizi (1080p, 720p, vb.)
+- **Multi-engine download** — yt-dlp birincil, native (ffmpeg HLS + multi-threaded MP4 + DASH segment + dual-source) yedek
+- **HLS AES-128 decryption** — encrypted HLS streams with automatic key download and CBC decrypt
+- **DASH segment download** — MPD manifest parse, segment template resolution ($Number$, $Time$, $RepresentationID$), parallel segment download, ffmpeg concat merge
+- **Dual-source download** — separate video+audio URL parallel download with ffmpeg merge
+- **RTMP/RTSP stream support** — ffmpeg-based live stream capture
+- **Magnet/Torrent support** — libtorrent binding + yt-dlp fallback
+- **Browser extension** — Chrome/Edge/Firefox with 7-layer video detection:
+  - DOM scan (video/source elements, data attributes)
+  - Shadow DOM recursive scan
+  - Network interception (fetch + XHR monkey-patch)
+  - Player API (JW Player, VideoJS, HLS.js, Dash.js, Plyr, ArtPlayer, FlowPlayer, Clappr, Bitmovin, Shaka, MediaElement.js, React fiber traversal)
+  - MutationObserver (dynamic content)
+  - Meta tags + JSON-LD
+  - Blob URL interceptor
+  - Performance API resource scanning
+  - webRequest.onHeadersReceived MIME/Content-Type detection
+  - DRM detection (EME API, Widevine/PlayReady keywords)
+- **Native messaging host** — stdio-based Chrome native messaging protocol for direct extension↔app communication
+- **HTTP integration server** — IDM-style connector with periodic sync, video detection forwarding
+- **Per-host download settings** — domain-specific max connections, speed limit, proxy, retry count
+- **Proxy support** — HTTP/HTTPS/SOCKS5 proxy per host, system proxy auto-detection
+- **Speed limiter** — token bucket rate limiting with global limit
+- **Download queue with priority** — high/normal/low priority with FIFO within same priority
+- **Auto-retry** — configurable retry count per download with exponential backoff
+- **Site-specific extractors** — plugin system with YouTube, Vimeo, Dailymotion, Twitter/X, Instagram, TikTok extractors
+- **Universal fetcher** — priority chain engine (backend/universal_fetcher.py): yt-dlp first, then Agent-Reach (bilibili metadata, social status, web/Jina Reader), then Scrapling stealth/spider, finally Playwright browser. Success requires playable data (video_url/formats); metadata-only results defer to later stages
+- **Agent-Reach extractors** — backend/extractors/agent_reach_*.py using the real channel API (get_channel().check(), WebChannel.read()): Bilibili public view-API metadata, per-platform availability with install guidance, Jina Reader full-text web read with video URL detection
+- **Scrapling extractors** — backend/extractors/scrapling_stealth.py (StealthyFetcher, Cloudflare bypass, video/source/XHR capture) and scrapling_spider.py (multi-page playlist/catalog crawl)
+- **New API endpoints** — POST /api/extract/universal, POST /api/extract/stealth, POST /api/agent-reach/status (channel availability), GET /api/extract/list
+- Multi-threaded MP4 download — HTTP Range ile paralel chunk indirme
+- Adaptive concurrent downloads based on internet speed
+- Category-based library: TV Series, Movies, Anime, Video, Uncategorized
+- External folder support (add any folder to the library)
+- Video.js player with playback speed, subtitles, Picture-in-Picture
+- Glassmorphism dark theme with fluid gradients and micro-interactions
+- TR/EN language support
+- Batch/playlist download support
+- Download history and management
+
+## Dependencies
+See requirements.txt
+
+## Setup Instructions
+1. Install Python 3.11+
+2. Run: pip install -r requirements.txt
+3. Install Playwright browser: playwright install chromium
+4. Ensure ffmpeg is in PATH (for HLS muxing)
+5. For torrent support: pip install libtorrent (optional)
+6. Launch: double-click panel.bat (Windows) or ./panel.sh (Linux/Mac)
+7. Click "BAŞLAT" in the server panel
+8. Open browser at http://localhost:8000
+
+## Directory Structure
+- backend/ - FastAPI application
+- backend/main.py - API routes (REST + WebSocket + integration)
+- backend/downloader.py - yt-dlp manager + native fallback + auto-retry
+- backend/browser_extractor.py - Playwright stealth browser automation
+- backend/manifest_parser.py - HLS/DASH manifest quality parser
+- backend/native_downloader.py - ffmpeg HLS + DASH segment + dual-source + multi-threaded MP4 + AES decrypt + RTMP/RTSP
+- backend/ydl_wrapper.py - yt-dlp binary management + enhanced format parser
+- backend/speed_limiter.py - Token bucket rate limiter
+- backend/host_settings.py - Per-host download settings
+- backend/proxy_manager.py - Proxy configuration and system proxy detection
+- backend/integration.py - HTTP integration connector (IDM-style)
+- backend/native_messaging.py - Chrome native messaging host protocol
+- backend/torrent_downloader.py - Magnet/torrent download via libtorrent or yt-dlp
+- backend/extractors/ - Site-specific extractor plugin system (social.py, agent_reach_bilibili/social/web, scrapling_stealth/spider)
+- backend/universal_fetcher.py - Priority chain extraction engine with singleton accessor
+- backend/scanner.py - External folder scanner
+- backend/database.py - SQLite database
+- backend/metadata.py - File name metadata extractor
+- server_panel.py - Tkinter control panel
+- panel.bat - Windows launcher
+- panel.sh - macOS/Linux launcher
+- native_host.bat - Native messaging host launcher
+- extension/ - Chrome/Edge/Firefox browser extension

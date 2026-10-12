@@ -1,0 +1,22 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+yt-dlp>=2024.8.0
+aiofiles>=24.1.0
+python-multipart>=0.0.9
+websockets>=13.0
+Pillow>=10.4.0
+playwright>=1.48.0
+requests>=2.31.0
+cryptography>=41.0.0
+# New dependencies for Agent-Reach & Scrapling integration
+agent-reach>=1.5.0
+scrapling>=0.4.0
+curl_cffi>=0.16.1
+patchright>=1.62.1
+browserforge>=1.2.4
+mcp>=2.0.0
+markdownify>=1.2.0
+feedparser>=6.0
+python-dotenv>=1.0
+loguru>=0.7
+rich>=13.0

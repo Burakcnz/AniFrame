@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($log = \"C:\\\\Otomasyonlar\\\\AniFrame\\\\server_panel.log\"; \"=== TAMAMLANDI \\(completed\\) count ===\"; \\(Select-String -Path $log -Pattern \"TAMAMLANDI\" -AllMatches | Measure-Object\\).Count; \"=== last 15 TAMAMLANDI ===\"; Select-String -Path $log -Pattern \"TAMAMLANDI\" | Select-Object -Last 15 | ForEach-Object { $_.Line }; \"=== openanime mentions ===\"; Select-String -Path $log -Pattern \"openanime|open-anime|OpenAnime\" | Select-Object -Last 10 | ForEach-Object { $_.Line })",
+      "PowerShell($p = \"$env:LOCALAPPDATA\\\\ms-playwright\"; if \\(Test-Path $p\\) { \"PLAYWRIGHT_BROWSERS:\"; Get-ChildItem $p -Directory | Select-Object -ExpandProperty Name } else { \"NO ms-playwright dir at $p\" })",
+      "PowerShell(try { \\(Get-Command deno -ErrorAction Stop\\).Source } catch { \"deno YOK\" }; python -m yt_dlp --version)",
+      "Bash(where deno *)",
+      "Bash(python -m yt_dlp --version)",
+      "Bash(winget --version)",
+      "Bash(python -m yt_dlp --help)",
+      "Bash(python -c \"import yt_dlp_ejs; print\\('ejs ok', yt_dlp_ejs.__file__\\)\")",
+      "Bash(python -m yt_dlp --js-runtimes node --dump-json --no-download --no-playlist \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\")"
+    ]
+  }
+}

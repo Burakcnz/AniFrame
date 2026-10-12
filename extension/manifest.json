@@ -1,0 +1,85 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmt/+w8QI2iJU+mEpT9ixaFWR78bIryP0xtp4HtEp9/q5Y/du2cTXlRTi8It7dBfT52qt2ikXvigrjwOfrlTEwZnGCBnxufnoAH6qe9WYyAty8k387f9C1ufo38ni4+FC73P9FZ+Akl8BR6wqY8WkYTDRW5FxMtmkOJeO3d85UPrn5pxUoLf/aisemeYUV30YwudCyl/wxEKCXYXVS2lYmOEf0HchoZzsSHxt/PyUsyVzzlhx3R9ovDEaDlYRSVTzEizK3jWnZIeLzLtl5DqgFsd5FZk0I7Jc192AsSYe0BJerMtFLwbACc/BH6umc+gIs3ifKTqZsvHCDw1LxfUBUwIDAQAB",
+  "manifest_version": 3,
+  "name": "AniFrame Video Downloader",
+  "version": "2.8",
+  "description": "IDM benzeri video algilama ve indirme - sayfalardaki videolari bulur ve AniFrame ile indirir",
+  "homepage_url": "http://localhost:8000",
+
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs",
+    "contextMenus",
+    "notifications",
+    "webRequest",
+    "alarms",
+    "cookies"
+  ],
+
+  "host_permissions": ["<all_urls>"],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": [
+      "lib/utils.js",
+      "lib/state.js",
+      "lib/filter.js",
+      "lib/parser.js",
+      "lib/detector.js",
+      "lib/ui.js",
+      "lib/logger.js",
+      "lib/api.js",
+      "content.js"
+    ],
+    "run_at": "document_idle",
+    "all_frames": true,
+    "match_about_blank": true
+  }],
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "AniFrame Video Downloader",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+
+  "web_accessible_resources": [{
+    "resources": ["icons/*.png"],
+    "matches": ["<all_urls>"]
+  }],
+
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Alt+A" },
+      "description": "AniFrame popup ac"
+    },
+    "toggle-panel": {
+      "suggested_key": { "default": "Ctrl+Shift+D" },
+      "description": "Indirme panelini ac/kapa"
+    },
+    "download-all": {
+      "suggested_key": { "default": "Ctrl+Shift+S" },
+      "description": "Tum videolari indir"
+    }
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

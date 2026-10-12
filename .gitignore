@@ -1,0 +1,16 @@
+panel.bat
+panel.sh
+server_panel.py
+server_panel.log
+server_panel_*.log
+.browser_profile/
+.cf_state/
+panel_settings.json
+aniframe.db
+thumbnails/
+downloads/
+*.pyc
+__pycache__/
+.venv/
+venv/
+.env
